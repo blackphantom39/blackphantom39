@@ -1,4 +1,4 @@
-### Hi there <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="25px"> - I'm Alex (23 y.o)
+## Hi there <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="25px"> - I'm Alex (23 y.o)
 
 I'm currently studying Computer Science at [**h_da**](https://h-da.de/) University of Applied Sciences in Darmstadt, Germany.
 My main interests are currently in the areas of infrastructure, networking and IT Automation. Thus currently taking a break from
@@ -23,16 +23,16 @@ coding, as I have overdone it lately.
 
 [![forthebadge](https://forthebadge.com/images/badges/powered-by-coffee.svg)](https://forthebadge.com)
 
-#### 📝 Currently learning the following
+### 📝 Currently learning the following
 
 [![OpenStack Badge](https://img.shields.io/badge/-Openstack-f01742.svg?style=for-the-badge&logo=openstack&logoColor=fff&link=https%3A%2F%2Fwww.openstack.org%2F)](https%3A%2F%2Fwww.openstack.org%2F)
 [![Ansible Badge](https://img.shields.io/badge/-Ansible-1A1918.svg?style=for-the-badge&logo=ansible&logoColor=ff&link=https%3A%2F%2Fwww.ansible.com%2F)](https%3A%2F%2Fwww.ansible.com%2F)
 [![Arduino Badge](https://img.shields.io/badge/-Arduino-00979D.svg?style=for-the-badge&logo=Arduino&logoColor=fff&link=https%3A%2F%2Fwww.arduino.cc%2F)](https%3A%2F%2Fwww.arduino.cc%2F)
 [![Kubernetes Badge](https://img.shields.io/badge/-kubernetes-326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=fff&link=https%3A%2F%2Fkubernetes.io%2F)](https%3A%2F%2Fkubernetes.io%2F)
 
-#### 📃 Technologies used and planning to learn
+### 📃 Technologies used and planning to learn
 
-##### ✔️ Tech Stack | Programs | Languages | etc. 
+#### ✔️ Tech Stack | Programs | Languages | etc. 
 
 <details>
 <summary style="font-size: 0.75em; padding-bottom 1em">🖥️ Operating Systems</summary>
@@ -77,7 +77,7 @@ coding, as I have overdone it lately.
 </details>
 
 
-##### 🤔 Things I am planning to learn
+#### 🤔 Things I am planning to learn
 
 <details>
 <summary style="font-size: 0.75em">📚 Frameworks, Platforms and Libraries</summary>
@@ -99,12 +99,12 @@ coding, as I have overdone it lately.
 
 </details>
 
-#### 📊 Stats
+### 📊 Stats
 
 <table style="border-collapse: collapse">
   <tr>
-    <td><img alt="Profile Stats" src="https://github-readme-stats.vercel.app/api?username=blackphantom39&show_icons=true&bg_color=270,373B44,4286f4&title_color=fff&text_color=fff"/></td>
-    <td><img alt="language Stats" src="https://github-readme-stats.vercel.app/api/top-langs/?username=blackphantom39&layout=compact&bg_color=270,373B44,4286f4&title_color=fff&text_color=fff"/></td>
+    <td><img alt="Profile Stats" src="https://github-readme-stats.vercel.app/api?username=blackphantom39&show_icons=true&bg_color=30,ffd89b,19547b&title_color=fff&text_color=fff"/></td>
+    <td><img alt="language Stats" src="https://github-readme-stats.vercel.app/api/top-langs/?username=blackphantom39&layout=compact&bg_color=30,ffd89b,19547b&title_color=fff&text_color=fff"/></td>
   </tr>
 </table>
 
@@ -116,5 +116,5 @@ coding, as I have overdone it lately.
 </details>
 
 ------------
-<p align="center">This <i>README</i> file is generated <b>every 6 hours</b>!</br>Last refresh: Saturday, 30 October, 21:16 CEST<br />
+<p align="center">This <i>README</i> file is generated <b>every 6 hours</b>!</br>Last refresh: Saturday, 30 October, 21:31 CEST<br />
 <p align="center"><img src="https://github.com/blackphantom39/blackphantom39/workflows/Build%20README/badge.svg" /></p>
