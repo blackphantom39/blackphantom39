@@ -1,0 +1,23 @@
+{
+  "name": "readme",
+  "version": "1.0.0",
+  "description": "GitHub profile readme",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/blackphantom39/blackphantom39.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/blackphantom39/blackphantom39/issues"
+  },
+  "homepage": "https://github.com/blackphantom39/blackphantom39#readme",
+  "dependencies": {
+    "mustache": "^4.2.0"
+  }
+}
