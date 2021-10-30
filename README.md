@@ -103,8 +103,16 @@ coding, as I have overdone it lately.
 
 <table style="border-collapse: collapse">
   <tr>
+<<<<<<< HEAD
     <td><img alt="Profile Stats" src="https://github-readme-stats.vercel.app/api?username=blackphantom39&show_icons=true&bg_color=270,373B44,4286f4&title_color=fff&text_color=fff"/></td>
     <td><img alt="language Stats" src="https://github-readme-stats.vercel.app/api/top-langs/?username=blackphantom39&layout=compact&bg_color=270,373B44,4286f4&title_color=fff&text_color=fff"/></td>
+||||||| abaa7bf
+    <td><img alt="Profile Stats" src="https://github-readme-stats.vercel.app/api?username=blackphantom39&show_icons=true?bg_color=270,373B44,4286f4"/></td>
+    <td><img alt="language Stats" src="https://github-readme-stats.vercel.app/api/top-langs/?username=blackphantom39&layout=compact"/></td>
+=======
+    <td><img alt="Profile Stats" src="https://github-readme-stats.vercel.app/api?username=blackphantom39&show_icons=true?bg_color=270,373B44,4286f4&title_color=fff&text_color=fff"/></td>
+    <td><img alt="language Stats" src="https://github-readme-stats.vercel.app/api/top-langs/?username=blackphantom39&layout=compact"/></td>
+>>>>>>> refs/remotes/origin/master
   </tr>
 </table>
 
@@ -116,5 +124,11 @@ coding, as I have overdone it lately.
 </details>
 
 ------------
+<<<<<<< HEAD
 <p align="center">This <i>README</i> file is generated <b>every 6 hours</b>!</br>Last refresh: Saturday, 30 October, 21:09 CEST<br />
+||||||| abaa7bf
+<p align="center">This <i>README</i> file is generated <b>every 6 hours</b>!</br>Last refresh: Saturday, 30 October, 21:04 CEST<br />
+=======
+<p align="center">This <i>README</i> file is generated <b>every 6 hours</b>!</br>Last refresh: Saturday, 30 October, 21:05 CEST<br />
+>>>>>>> refs/remotes/origin/master
 <p align="center"><img src="https://github.com/blackphantom39/blackphantom39/workflows/Build%20README/badge.svg" /></p>
