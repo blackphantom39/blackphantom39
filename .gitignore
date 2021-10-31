@@ -1,6 +1,3 @@
-# Ignore the readme, as it will be generated on push to master
-README.md
-
 # Logs
 logs
 *.log
