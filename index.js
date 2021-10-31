@@ -73,10 +73,10 @@ function getAge(dateString) {
  *
  * @returns Dictionary of badge links by group
  */
-function createBadgeDictionary() {
+function createBadgeDictionary(htmlStyle = false) {
   const grouped = groupBy(badgeConfigs, 'group');
   for (const [key, value] of Object.entries(grouped)) {
-    let rendered = value.map((badgeConfig) => ({ badge : generateBadge(badgeConfig)}));
+    let rendered = value.map((badgeConfig) => ({ badge : generateBadge(badgeConfig, htmlStyle)}));
     grouped[key] = rendered;
   }
   return grouped;
@@ -124,23 +124,58 @@ function fixedEncodeURIComponent(str) {
 }
 
 /**
+ * Checks whether a string has the length 0 or
+ * is set.
+ *
+ * @param {string} str The string to check
+ * @returns Boolean indicating empty string
+ */
+function isEmpty(str) {
+  return (!str || str.length === 0 );
+}
+
+/**
+ * Checks whether a string is set or only consists of
+ * whitespaces.
+ *
+ * @param {string} str The string to check
+ * @returns Boolean indicating blank string
+ */
+function isBlank(str) {
+  return (!str || /^\s*$/.test(str));
+}
+
+/**
  * Creates a link for a shields io badge based on the provided values
  *
  * @param {*} badgeConfig The badge config object.
  * @returns The shields.io linkt to display a badge
  */
-function generateBadge(badgeConfig) {
+function generateBadge(badgeConfig, html = false) {
   for (const [key, value] of Object.entries(badgeConfig)) {
-    badgeConfig[key] = fixedEncodeURIComponent(value);
+    if (key !== 'link') {
+      badgeConfig[key] = fixedEncodeURIComponent(value);
+    }
   }
-  const url = `[![${badgeConfig.name} Badge](https://img.shields.io/badge/` +
-              `-${badgeConfig.badgeText}` +
-              `-${badgeConfig.labelBgColor}` +
-              `.svg?style=for-the-badge` +
-              `&logo=${badgeConfig.logo}` +
-              `&logoColor=${badgeConfig.logoColor}` +
-              `&link=${badgeConfig.link})]` +
-              `(${badgeConfig.link || 'https://github.com/blackphantom39'})`;
+
+  const hasSecondText = !(isBlank(badgeConfig.secondText) || isEmpty(badgeConfig.secondText));
+
+  const shieldsLink = 
+    "https://img.shields.io/badge/" +
+    `${hasSecondText ? '' : '-'}${badgeConfig.badgeText}` +
+    `${hasSecondText ? '-' : ''}${hasSecondText ? badgeConfig.secondText : ''}` +
+    `-${badgeConfig.labelBgColor}` +
+    `.svg?style=for-the-badge` +
+    `&logo=${badgeConfig.logo}` +
+    `&logoColor=${badgeConfig.logoColor}` +
+    `${hasSecondText ? '&labelColor=' + badgeConfig.logoBgColor : ''}`;
+
+  const url = html 
+    ? `<a href="${badgeConfig.link || 'https://github.com/blackphantom39'}">` +
+      `<img alt="${badgeConfig.name}" src="${shieldsLink}" /></a>`
+
+    : `[![${badgeConfig.name} Badge](${shieldsLink}` +
+      `(${badgeConfig.link || 'https://github.com/blackphantom39'})`;
 
   return url;
 }
@@ -163,7 +198,7 @@ async function actions() {
   getAge(args[0]);
 
   // Generate Badges
-  DATA.badges = createBadgeDictionary()
+  DATA.badges = createBadgeDictionary(true);
 
   // Generate the Readme
   await generateReadMe();
