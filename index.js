@@ -174,7 +174,7 @@ function generateBadge(badgeConfig, html = false) {
     ? `<a href="${badgeConfig.link || 'https://github.com/blackphantom39'}">` +
       `<img alt="${badgeConfig.name}" src="${shieldsLink}" /></a>`
 
-    : `[![${badgeConfig.name} Badge](${shieldsLink}` +
+    : `[![${badgeConfig.name} Badge](${shieldsLink})]` +
       `(${badgeConfig.link || 'https://github.com/blackphantom39'})`;
 
   return url;
@@ -198,7 +198,7 @@ async function actions() {
   getAge(args[0]);
 
   // Generate Badges
-  DATA.badges = createBadgeDictionary(true);
+  DATA.badges = createBadgeDictionary();
 
   // Generate the Readme
   await generateReadMe();
