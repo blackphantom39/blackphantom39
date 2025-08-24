@@ -1,4 +1,4 @@
-# Hi there <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="25px"> - I'm Alex (26 y.o)
+# Hi there <img src="https://media.giphy.com/media/hvRJCLFzcasrR4ia7z/giphy.gif" width="25px"> - I'm Alex (27 y.o)
 
 I'm currently studying Computer Science at [**h_da**](https://h-da.de/) University of Applied Sciences in Darmstadt, Germany.
 My main interests are currently in the areas of infrastructure, networking and IT Automation. Thus currently taking a break from
@@ -138,5 +138,5 @@ coding, as I have overdone it lately.
 </details>
 
 ------------
-<p align="center">This <i>README</i> file is generated <b>every 6 hours</b>!</br>Last refresh: Saturday, 23 August at 20:27 CEST<br />
+<p align="center">This <i>README</i> file is generated <b>every 6 hours</b>!</br>Last refresh: Sunday, 24 August at 03:56 CEST<br />
 <p align="center"><img src="https://github.com/blackphantom39/blackphantom39/workflows/Build%20README/badge.svg" /></p>
