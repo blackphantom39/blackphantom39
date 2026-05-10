@@ -1,0 +1,22 @@
+{
+  "id": "tokyonight-moon",
+  "name": "Tokyo Night Moon",
+  "dark": {
+    "bg": "#222436",
+    "fg": "#c8d3f5",
+    "muted": "#636da6",
+    "ascii": "#82aaff",
+    "accent1": "#ff966c",
+    "accent2": "#82aaff",
+    "accent3": "#c3e88d"
+  },
+  "light": {
+    "bg": "#e1e2e7",
+    "fg": "#3760bf",
+    "muted": "#6172b0",
+    "ascii": "#2e7de9",
+    "accent1": "#b15c00",
+    "accent2": "#2e7de9",
+    "accent3": "#587539"
+  }
+}

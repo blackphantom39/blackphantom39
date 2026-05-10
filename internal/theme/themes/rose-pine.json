@@ -1,0 +1,22 @@
+{
+  "id": "rose-pine",
+  "name": "Rosé Pine / Dawn",
+  "dark": {
+    "bg": "#191724",
+    "fg": "#e0def4",
+    "muted": "#6e6a86",
+    "ascii": "#c4a7e7",
+    "accent1": "#f6c177",
+    "accent2": "#c4a7e7",
+    "accent3": "#9ccfd8"
+  },
+  "light": {
+    "bg": "#faf4ed",
+    "fg": "#575279",
+    "muted": "#797593",
+    "ascii": "#907aa9",
+    "accent1": "#ea9d34",
+    "accent2": "#907aa9",
+    "accent3": "#56949f"
+  }
+}
