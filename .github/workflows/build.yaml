@@ -1,38 +1,47 @@
-name: Build README
+name: build
 
 on:
   push:
-    branches:
-      - master
+    branches: [master]
   schedule:
-    - cron: '0 */6 * * *'
+    # Daily at 04:00 UTC. Updates the rendered SVGs/README so the age and any
+    # other date-derived bits stay current.
+    - cron: '0 4 * * *'
+  workflow_dispatch:
+
+# Least-privilege token: only allowed to write back the generated artifacts.
+permissions:
+  contents: write
+
+# Prevent overlapping scheduled and push-triggered runs from racing each other.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
     steps:
-      - name: Checkout current repository to Master
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      - name: Setup NodeJs 16.x
-        uses: actions/setup-node@v2
+      - uses: actions/setup-go@v5
         with:
-          node-version: '16.x'
+          go-version: '1.23'
+          cache: true
 
-      - name: Cache dependencies and build outputs to improve execution time
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-js-${{ hashFiles('package-lock.json') }}
+      - name: Generate README and SVGs
+        run: go run .
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Generate README file
-        run: node index.js ${{secrets.BIRTH}}
-
-      - name: Commit and push new README.md to the repository
-        uses: mikeal/publish-to-github-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Commit and push if changed
+        run: |
+          set -euo pipefail
+          if [[ -z "$(git status --porcelain README.md dark.svg light.svg)" ]]; then
+            echo "no changes to commit"
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md dark.svg light.svg
+          git commit -m "chore(build): refresh generated artifacts"
+          git push
