@@ -28,13 +28,20 @@ func main() {
 		out    = flag.String("out", "ascii.txt", "output ASCII path")
 		cols   = flag.Int("cols", 40, "output width in characters")
 		rows   = flag.Int("rows", 0, "output height in characters (0 = auto from aspect)")
-		mode   = flag.String("mode", "sketch", "density mode: silhouette | sketch | lit")
+		mode   = flag.String("mode", "sketch", "density mode: silhouette | sketch | lit | quadrant")
 		alphaT = flag.Int("alpha-threshold", 32, "alpha below this value is treated as transparent (0–255)")
+		lumT   = flag.Float64("lum-threshold", 0.5, "quadrant mode: luminance threshold within opaque area (0–1)")
 	)
 	flag.Parse()
 
 	if *in == "" {
 		log.Fatal("missing -in")
+	}
+	if *mode == "quadrant" {
+		if err := runQuadrant(*in, *out, *cols, *rows, uint32(*alphaT), *lumT); err != nil {
+			log.Fatal(err)
+		}
+		return
 	}
 	if err := run(*in, *out, *cols, *rows, *mode, uint32(*alphaT)); err != nil {
 		log.Fatal(err)
@@ -114,6 +121,105 @@ func run(inPath, outPath string, cols, rows int, mode string, alphaT uint32) err
 			}
 			idx := int(d*float64(maxIdx) + 0.5)
 			b.WriteRune(rampRunes[idx])
+		}
+		b.WriteByte('\n')
+	}
+
+	return os.WriteFile(outPath, []byte(b.String()), 0o644)
+}
+
+// quadrantChars maps a 4-bit sub-pixel mask to a Unicode block quadrant rune.
+// Bit layout: bit 0 = upper-left, bit 1 = upper-right, bit 2 = lower-left,
+// bit 3 = lower-right.
+var quadrantChars = []rune{
+	' ', '▘', '▝', '▀', '▖', '▌', '▞', '▛',
+	'▗', '▚', '▐', '▜', '▄', '▙', '▟', '█',
+}
+
+// runQuadrant renders the image using 2×2 sub-pixel quadrant block characters,
+// quadrupling spatial resolution at the same column count. Each character cell
+// is divided into four sub-cells; a sub-cell is "on" when it is sufficiently
+// opaque AND its luminance is below lumT (so dark features like eyes, hair
+// and outlines drive the shape).
+func runQuadrant(inPath, outPath string, cols, rows int, alphaT uint32, lumT float64) error {
+	f, err := os.Open(inPath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	img, _, err := image.Decode(f)
+	if err != nil {
+		return fmt.Errorf("decoding %s: %w", inPath, err)
+	}
+	bb := img.Bounds()
+	srcW, srcH := bb.Dx(), bb.Dy()
+
+	// Quadrant sub-pixels are roughly square inside a monospace cell
+	// (~4×8 px each), so source aspect needs no halving here.
+	if rows == 0 {
+		rows = cols * srcH / srcW
+		if rows < 1 {
+			rows = 1
+		}
+	}
+
+	subW, subH := cols*2, rows*2
+
+	// Sub-pixel mask: true when the sub-cell is "on".
+	mask := make([]bool, subW*subH)
+	for sy := 0; sy < subH; sy++ {
+		y0 := bb.Min.Y + (sy*srcH)/subH
+		y1 := bb.Min.Y + ((sy+1)*srcH)/subH
+		for sx := 0; sx < subW; sx++ {
+			x0 := bb.Min.X + (sx*srcW)/subW
+			x1 := bb.Min.X + ((sx+1)*srcW)/subW
+
+			var sumLum, opaque, total uint64
+			for y := y0; y < y1; y++ {
+				for x := x0; x < x1; x++ {
+					r, g, bl, a := img.At(x, y).RGBA()
+					a8 := a >> 8
+					total++
+					if a8 < alphaT {
+						continue
+					}
+					opaque++
+					sumLum += (uint64(r>>8)*299 + uint64(g>>8)*587 + uint64(bl>>8)*114) / 1000
+				}
+			}
+			if total == 0 || opaque == 0 {
+				continue
+			}
+			coverage := float64(opaque) / float64(total)
+			avgLum := float64(sumLum) / float64(opaque) / 255.0
+			if coverage >= 0.5 && avgLum < lumT {
+				mask[sy*subW+sx] = true
+			}
+		}
+	}
+
+	var b strings.Builder
+	for ry := 0; ry < rows; ry++ {
+		for cx := 0; cx < cols; cx++ {
+			ul := mask[(ry*2+0)*subW+(cx*2+0)]
+			ur := mask[(ry*2+0)*subW+(cx*2+1)]
+			ll := mask[(ry*2+1)*subW+(cx*2+0)]
+			lr := mask[(ry*2+1)*subW+(cx*2+1)]
+			var idx int
+			if ul {
+				idx |= 1
+			}
+			if ur {
+				idx |= 2
+			}
+			if ll {
+				idx |= 4
+			}
+			if lr {
+				idx |= 8
+			}
+			b.WriteRune(quadrantChars[idx])
 		}
 		b.WriteByte('\n')
 	}

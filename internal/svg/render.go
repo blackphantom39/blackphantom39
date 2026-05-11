@@ -15,16 +15,17 @@ import (
 )
 
 const (
-	width      = 880
-	padding    = 24
-	lineH      = 20
-	asciiLineH = 16
-	fontSize   = 14
-	asciiX     = 24
-	asciiY0    = 36
-	infoX      = 380
-	infoY0     = 36
-	keyWidth   = 12 // characters reserved for key column
+	width         = 880
+	padding       = 24
+	lineH         = 20
+	asciiLineH    = 14
+	fontSize      = 14
+	asciiFontSize = 11
+	asciiX        = 24
+	asciiY0       = 30
+	infoX         = 440
+	infoY0        = 36
+	keyWidth      = 12 // characters reserved for key column
 )
 
 // Card bundles everything needed to render one profile SVG.
@@ -104,9 +105,10 @@ text { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Conso
 
 	fmt.Fprintf(&b, `<rect class="bg" width="%d" height="%d" rx="10" />`+"\n", width, height)
 
-	// ASCII column
+	// ASCII column. Rendered at a smaller font size than the info column so
+	// a denser ASCII grid (e.g. 60 cols × 30 rows) still fits on the left.
 	if len(c.ASCII) > 0 {
-		fmt.Fprintln(&b, `<g class="as">`)
+		fmt.Fprintf(&b, `<g class="as" font-size="%d">`+"\n", asciiFontSize)
 		for i, line := range c.ASCII {
 			y := asciiY0 + i*asciiLineH
 			fmt.Fprintf(&b, `  <text x="%d" y="%d" xml:space="preserve">%s</text>`+"\n",
