@@ -25,7 +25,11 @@ const (
 	asciiY0       = 30
 	infoX         = 440
 	infoY0        = 36
-	keyWidth      = 12 // characters reserved for key column
+	keyWidth      = 12 // characters reserved for the key column
+	// valueCols is the rune width budget for the value portion of a row,
+	// chosen to keep "<key>....: <value>" inside the right margin at the
+	// configured monospace font. Long values are wrapped on ", " boundaries.
+	valueCols = 35
 )
 
 // Card bundles everything needed to render one profile SVG.
@@ -76,8 +80,23 @@ func (c *Card) rows() []row {
 func (c *Card) render(p theme.Palette) []byte {
 	rows := c.rows()
 
-	// 2 header lines + N row lines, then bottom padding.
-	infoH := infoY0 + (2+len(rows))*lineH + padding
+	// Pre-wrap so we know the final line count for height computation and so
+	// rendering can stay a single pass.
+	wrapped := make([][]string, len(rows))
+	totalLines := 2 // header + separator
+	for i, r := range rows {
+		if r.blank {
+			totalLines++
+			continue
+		}
+		wrapped[i] = wrapValue(r.value, valueCols)
+		if len(wrapped[i]) == 0 {
+			wrapped[i] = []string{""}
+		}
+		totalLines += len(wrapped[i])
+	}
+
+	infoH := infoY0 + totalLines*lineH + padding
 	asciiH := asciiY0 + len(c.ASCII)*asciiLineH + padding
 	height := infoH
 	if asciiH > height {
@@ -129,8 +148,10 @@ text { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Conso
 	fmt.Fprintf(&b, `<text x="%d" y="%d" class="mt">%s</text>`+"\n",
 		infoX, y, strings.Repeat("─", sepLen))
 
-	// Rows
-	for _, r := range rows {
+	// Rows. Long values get split on ", " into continuation lines that align
+	// with where the value column starts on the first line.
+	indent := strings.Repeat(" ", keyWidth+2) // key column + ":" + space
+	for i, r := range rows {
 		y += lineH
 		if r.blank {
 			continue
@@ -140,13 +161,51 @@ text { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Conso
 			dots = 1
 		}
 		sep := strings.Repeat(".", dots) + ":"
-		fmt.Fprintf(&b,
-			`<text x="%d" y="%d"><tspan class="a2 b">%s</tspan><tspan class="mt" xml:space="preserve">%s </tspan><tspan class="fg">%s</tspan></text>`+"\n",
-			infoX, y, xmlEscape(r.key), sep, xmlEscape(r.value))
+
+		for j, line := range wrapped[i] {
+			if j == 0 {
+				fmt.Fprintf(&b,
+					`<text x="%d" y="%d"><tspan class="a2 b">%s</tspan><tspan class="mt" xml:space="preserve">%s </tspan><tspan class="fg">%s</tspan></text>`+"\n",
+					infoX, y, xmlEscape(r.key), sep, xmlEscape(line))
+				continue
+			}
+			y += lineH
+			fmt.Fprintf(&b,
+				`<text x="%d" y="%d" xml:space="preserve" class="fg">%s%s</text>`+"\n",
+				infoX, y, indent, xmlEscape(line))
+		}
 	}
 
 	fmt.Fprintln(&b, `</svg>`)
 	return []byte(b.String())
+}
+
+// wrapValue splits a value string on ", " boundaries so each line fits within
+// maxChars runes. Intermediate lines keep their trailing comma so the value
+// reads correctly across the wrap. A single overlong token without commas is
+// returned unwrapped — alignment matters more than truncation for the few
+// keys (e.g. Title) that might exceed the budget.
+func wrapValue(value string, maxChars int) []string {
+	if utf8.RuneCountInString(value) <= maxChars {
+		return []string{value}
+	}
+	parts := strings.Split(value, ", ")
+	if len(parts) == 1 {
+		return []string{value}
+	}
+	var lines []string
+	cur := parts[0]
+	for _, p := range parts[1:] {
+		candidate := cur + ", " + p
+		if utf8.RuneCountInString(candidate) > maxChars {
+			lines = append(lines, cur+",")
+			cur = p
+			continue
+		}
+		cur = candidate
+	}
+	lines = append(lines, cur)
+	return lines
 }
 
 // xmlEscape escapes the five XML-significant characters.
