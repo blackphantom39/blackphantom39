@@ -12,26 +12,29 @@ import (
 	"time"
 
 	"github.com/blackphantom39/blackphantom39/internal/profile"
+	"github.com/blackphantom39/blackphantom39/internal/readme"
 	"github.com/blackphantom39/blackphantom39/internal/svg"
 	"github.com/blackphantom39/blackphantom39/internal/theme"
 )
 
 func main() {
 	var (
-		themeFile   = flag.String("theme", "theme.txt", "path to active theme file")
-		profileFile = flag.String("profile", "profile.json", "path to profile JSON")
-		asciiFile   = flag.String("ascii", "ascii.txt", "path to ASCII art file")
-		outDark     = flag.String("dark", "dark.svg", "output path for the dark SVG")
-		outLight    = flag.String("light", "light.svg", "output path for the light SVG")
+		themeFile    = flag.String("theme", "theme.txt", "path to active theme file")
+		profileFile  = flag.String("profile", "profile.json", "path to profile JSON")
+		asciiFile    = flag.String("ascii", "ascii.txt", "path to ASCII art file")
+		templateFile = flag.String("template", "templates/README.md.tmpl", "path to README template")
+		outDark      = flag.String("dark", "dark.svg", "output path for the dark SVG")
+		outLight     = flag.String("light", "light.svg", "output path for the light SVG")
+		outReadme    = flag.String("readme", "README.md", "output path for the README")
 	)
 	flag.Parse()
 
-	if err := run(*themeFile, *profileFile, *asciiFile, *outDark, *outLight); err != nil {
+	if err := run(*themeFile, *profileFile, *asciiFile, *templateFile, *outDark, *outLight, *outReadme); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func run(themeFile, profileFile, asciiFile, outDark, outLight string) error {
+func run(themeFile, profileFile, asciiFile, templateFile, outDark, outLight, outReadme string) error {
 	themeID, err := readActiveTheme(themeFile)
 	if err != nil {
 		return err
@@ -49,11 +52,12 @@ func run(themeFile, profileFile, asciiFile, outDark, outLight string) error {
 		return err
 	}
 
+	age := pr.Age(time.Now())
 	card := &svg.Card{
 		Profile: pr,
 		Theme:   th,
 		ASCII:   asciiLines,
-		Age:     pr.Age(time.Now()),
+		Age:     age,
 	}
 
 	if err := os.WriteFile(outDark, card.RenderDark(), 0o644); err != nil {
@@ -62,7 +66,14 @@ func run(themeFile, profileFile, asciiFile, outDark, outLight string) error {
 	if err := os.WriteFile(outLight, card.RenderLight(), 0o644); err != nil {
 		return fmt.Errorf("writing %s: %w", outLight, err)
 	}
-	fmt.Printf("rendered %s + %s with theme %q\n", outDark, outLight, th.Name)
+	if err := readme.Render(templateFile, outReadme, readme.Data{
+		Profile: pr,
+		Theme:   th,
+		Age:     age,
+	}); err != nil {
+		return err
+	}
+	fmt.Printf("rendered %s, %s, %s with theme %q\n", outDark, outLight, outReadme, th.Name)
 	return nil
 }
 
