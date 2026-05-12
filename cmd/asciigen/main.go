@@ -34,6 +34,7 @@ func main() {
 		lumT        = flag.Float64("lum-threshold", 0.5, "quadrant/braille: luminance threshold within opaque area (0–1)")
 		ramp        = flag.String("ramp", defaultRamp, "density ramp (sparse → dense) for silhouette/sketch/lit")
 		rampReverse = flag.Bool("ramp-reverse", false, "treat -ramp as dense → sparse and reverse it")
+		colorsOut   = flag.String("colors", "", "if set, also write a per-character hex-color sidecar; braille mode then uses alpha-only so light regions are included")
 	)
 	flag.Parse()
 
@@ -56,7 +57,7 @@ func main() {
 			log.Fatal(err)
 		}
 	case "braille":
-		if err := runBraille(*in, *out, *cols, *rows, uint32(*alphaT), *lumT); err != nil {
+		if err := runBraille(*in, *out, *colorsOut, *cols, *rows, uint32(*alphaT), *lumT); err != nil {
 			log.Fatal(err)
 		}
 	default:
@@ -261,10 +262,17 @@ var brailleBit = [4][2]int{
 // runBraille renders the image using Braille patterns (U+2800–U+28FF). Each
 // character cell encodes 2×4 binary sub-dots, giving 8× spatial resolution at
 // the same column count and the squarest sub-pixel aspect of any block mode.
-// A sub-dot is "on" when its sampled region is sufficiently opaque AND its
-// average luminance is below lumT — so dark features (eyes, outlines, hair)
-// drive the dot mask.
-func runBraille(inPath, outPath string, cols, rows int, alphaT uint32, lumT float64) error {
+//
+// Default sub-dot inclusion: opaque AND luminance < lumT (dark features like
+// eyes/outlines drive the dot mask).
+//
+// When colorsOut is non-empty, the mode is switched to alpha-only inclusion
+// (any sufficiently opaque sub-dot counts) so that light regions — towel
+// arms, skin, highlights — are also part of the silhouette. A parallel hex
+// color grid is written to colorsOut, one space-separated token per char.
+// Cells with no opaque dots get the sentinel "-" so the renderer can fall
+// back to the theme accent.
+func runBraille(inPath, outPath, colorsOut string, cols, rows int, alphaT uint32, lumT float64) error {
 	f, err := os.Open(inPath)
 	if err != nil {
 		return err
@@ -288,8 +296,19 @@ func runBraille(inPath, outPath string, cols, rows int, alphaT uint32, lumT floa
 	}
 
 	subW, subH := cols*2, rows*4
+	wantColors := colorsOut != ""
 
 	mask := make([]bool, subW*subH)
+	// Per-sub-dot color sums, populated only when -colors is requested.
+	var rSum, gSum, bSum []uint64
+	var nPx []uint64
+	if wantColors {
+		rSum = make([]uint64, subW*subH)
+		gSum = make([]uint64, subW*subH)
+		bSum = make([]uint64, subW*subH)
+		nPx = make([]uint64, subW*subH)
+	}
+
 	for sy := 0; sy < subH; sy++ {
 		y0 := bb.Min.Y + (sy*srcH)/subH
 		y1 := bb.Min.Y + ((sy+1)*srcH)/subH
@@ -297,7 +316,7 @@ func runBraille(inPath, outPath string, cols, rows int, alphaT uint32, lumT floa
 			x0 := bb.Min.X + (sx*srcW)/subW
 			x1 := bb.Min.X + ((sx+1)*srcW)/subW
 
-			var sumLum, opaque, total uint64
+			var sumLum, opaque, total, sR, sG, sB uint64
 			for y := y0; y < y1; y++ {
 				for x := x0; x < x1; x++ {
 					r, g, bl, a := img.At(x, y).RGBA()
@@ -307,7 +326,11 @@ func runBraille(inPath, outPath string, cols, rows int, alphaT uint32, lumT floa
 						continue
 					}
 					opaque++
-					sumLum += (uint64(r>>8)*299 + uint64(g>>8)*587 + uint64(bl>>8)*114) / 1000
+					r8, g8, b8 := uint64(r>>8), uint64(g>>8), uint64(bl>>8)
+					sumLum += (r8*299 + g8*587 + b8*114) / 1000
+					sR += r8
+					sG += g8
+					sB += b8
 				}
 			}
 			if total == 0 || opaque == 0 {
@@ -315,29 +338,72 @@ func runBraille(inPath, outPath string, cols, rows int, alphaT uint32, lumT floa
 			}
 			coverage := float64(opaque) / float64(total)
 			avgLum := float64(sumLum) / float64(opaque) / 255.0
-			if coverage >= 0.5 && avgLum < lumT {
-				mask[sy*subW+sx] = true
+
+			on := coverage >= 0.5
+			if !wantColors {
+				on = on && avgLum < lumT
+			}
+			if on {
+				idx := sy*subW + sx
+				mask[idx] = true
+				if wantColors {
+					rSum[idx] = sR
+					gSum[idx] = sG
+					bSum[idx] = sB
+					nPx[idx] = opaque
+				}
 			}
 		}
 	}
 
-	var b strings.Builder
+	var chars strings.Builder
+	var cols2 strings.Builder
 	for ry := 0; ry < rows; ry++ {
 		for cx := 0; cx < cols; cx++ {
 			var bits int
+			var cR, cG, cB, cN uint64
 			for dy := 0; dy < 4; dy++ {
 				for dx := 0; dx < 2; dx++ {
-					if mask[(ry*4+dy)*subW+(cx*2+dx)] {
-						bits |= 1 << brailleBit[dy][dx]
+					idx := (ry*4+dy)*subW + (cx*2 + dx)
+					if !mask[idx] {
+						continue
+					}
+					bits |= 1 << brailleBit[dy][dx]
+					if wantColors {
+						cR += rSum[idx]
+						cG += gSum[idx]
+						cB += bSum[idx]
+						cN += nPx[idx]
 					}
 				}
 			}
-			b.WriteRune(rune(0x2800 + bits))
+			chars.WriteRune(rune(0x2800 + bits))
+			if wantColors {
+				if cx > 0 {
+					cols2.WriteByte(' ')
+				}
+				if cN == 0 {
+					cols2.WriteByte('-')
+				} else {
+					fmt.Fprintf(&cols2, "#%02x%02x%02x", cR/cN, cG/cN, cB/cN)
+				}
+			}
 		}
-		b.WriteByte('\n')
+		chars.WriteByte('\n')
+		if wantColors {
+			cols2.WriteByte('\n')
+		}
 	}
 
-	return os.WriteFile(outPath, []byte(b.String()), 0o644)
+	if err := os.WriteFile(outPath, []byte(chars.String()), 0o644); err != nil {
+		return err
+	}
+	if wantColors {
+		if err := os.WriteFile(colorsOut, []byte(cols2.String()), 0o644); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // densityFunc returns a function mapping (coverage, luminance, alpha) ∈ [0,1]
