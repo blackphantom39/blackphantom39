@@ -18,11 +18,11 @@ const (
 	width         = 880
 	padding       = 24
 	lineH         = 20
-	asciiLineH    = 14
+	asciiLineH    = 12
 	fontSize      = 14
-	asciiFontSize = 11
+	asciiFontSize = 9
 	asciiX        = 24
-	asciiY0       = 30
+	asciiY0       = 24
 	infoX         = 440
 	infoY0        = 36
 	keyWidth      = 12 // characters reserved for the key column
