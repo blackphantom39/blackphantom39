@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 520" width="880" height="520" font-size="14">
+<style>
+text { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Consolas, monospace; }
+.bg { fill: #e1e2e7 }
+.fg { fill: #3760bf }
+.mt { fill: #6172b0 }
+.as { fill: #2e7de9 }
+.a1 { fill: #b15c00 }
+.a2 { fill: #2e7de9 }
+.a3 { fill: #587539 }
+.b  { font-weight: 700 }
+</style>
+<rect class="bg" width="880" height="520" rx="10" />
+<g class="as" font-size="11">
+  <text x="24" y="30" xml:space="preserve">                                                            </text>
+  <text x="24" y="44" xml:space="preserve">                                                            </text>
+  <text x="24" y="58" xml:space="preserve">                                                            </text>
+  <text x="24" y="72" xml:space="preserve">                                                            </text>
+  <text x="24" y="86" xml:space="preserve">                ░▒▒▒▓▓▒                                     </text>
+  <text x="24" y="100" xml:space="preserve">              ░▓▓▓▓▓▓▓░░▒▒▒▒▒▒░░                            </text>
+  <text x="24" y="114" xml:space="preserve">                  ░▒▒▒▒▒▒▒▒▒▒▒▒▒▒░                          </text>
+  <text x="24" y="128" xml:space="preserve">                 ▒▓▒▒▒▒▒▒▒▓▒▒▒▓▒▒▒                          </text>
+  <text x="24" y="142" xml:space="preserve">                ░▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒                          </text>
+  <text x="24" y="156" xml:space="preserve">                ▒▓▓▓▒▒▒▒▒▒▒▒▒▒▓▒▒▒▒                         </text>
+  <text x="24" y="170" xml:space="preserve">                ▓▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▒░                      </text>
+  <text x="24" y="184" xml:space="preserve">               ░▓▓▓▓▓▒▒▓▒▒▒▒▒▒▒▒▒▒▓▓▓▓▒                     </text>
+  <text x="24" y="198" xml:space="preserve">               ▒▓▓▓▓▓▓▓▓▒▒▒▒▓▓▓▒▒▓▓▓▓▓▓▒▒░░░░░░             </text>
+  <text x="24" y="212" xml:space="preserve">              ░▒▓▓▓▓▓▓▓▓▓▓▒▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒░▒░            </text>
+  <text x="24" y="226" xml:space="preserve">           ░░▒▒▒▒▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒░▒▒░           </text>
+  <text x="24" y="240" xml:space="preserve">        ░░▒▒▒▒▒▒▒▒▓▓▒▒▓▓▓▓▓▓▓▓▓▓▓▓▒▒▒▒▒▒▒▒▒▒░░▒▒▒           </text>
+  <text x="24" y="254" xml:space="preserve">     ░░▒▒▒▒▒░░▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▒▒▒▒▒▒▒▒▒▒▒▒▒░░▒▒▒█▒          </text>
+  <text x="24" y="268" xml:space="preserve">   ░▓▓▓▓▒▒▒▒░░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒██▓         </text>
+  <text x="24" y="282" xml:space="preserve">   ▒▓████▓▒▒▒▒░░▒▒▒▒░▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒░▒▒▒▒▒▒▒▒▒████▓        </text>
+  <text x="24" y="296" xml:space="preserve">   ▒███████▓▓▒▒▒░░░░▒▒▒▒▒▒▒░▒▒▒▒▒▒▒▒▒▒░░▒▒▒▒▒▓██████▓       </text>
+  <text x="24" y="310" xml:space="preserve">   ░██████████▓▒▒▒▒▒▒▒▒▒▒▒▒░▒▒▒▒▒▒▒▒▒░░░▒▒▒▒▓▓▓▓▓████▓      </text>
+  <text x="24" y="324" xml:space="preserve">    ▓███████████▓▓▒▒▒▒▒▒▒▒▒░░░░░░░▒▒▒▒▒▒▒▒▓▓▓▓▓▓▒▒▒▒▓▓▓░    </text>
+  <text x="24" y="338" xml:space="preserve">    ▓███████████████▓▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▓▓▒▒▒▒▓█    </text>
+  <text x="24" y="352" xml:space="preserve">    ▒█████████████████████▓▓▓▓▓▓▓█▓▒▒▒▒▒▒▒▒▒▒▒▒▓▓▓▒▒▒▒▓█▒   </text>
+  <text x="24" y="366" xml:space="preserve">    ░██████████████████████████████▓▒▒▒▒▒▒▒▒▓▓▓▓▓▓▓▒▒▒▓▓█   </text>
+  <text x="24" y="380" xml:space="preserve">   ░█████████████████████████████████▓▓▓▓▓███▓▓▓▓▓▓▒▒▒▓▓█   </text>
+  <text x="24" y="394" xml:space="preserve">   ▒█████████████████▓▓███████████████▒▓█████▓▓▓▓▓▒▒▒▓▓▓▓   </text>
+  <text x="24" y="408" xml:space="preserve">   ░██████████████▓███▓▓███████████▓▓▒███████▓▓▓▓▓▒▒▓▓▓▓▒   </text>
+  <text x="24" y="422" xml:space="preserve">  ░█████████████▓▓▒░▒▒▒▒▒▓▓▓▓▓▓▓▓▓▓█▓▒███████▓▓▓▓▓▓▓▓▓▓█░   </text>
+  <text x="24" y="436" xml:space="preserve">  ░░░░░░░░░░░░░░░░░░░       ░░░░░░░░░░░░░░░░░░░░░░░░░░░░    </text>
+</g>
+<text x="440" y="36"><tspan class="a1 b">alex</tspan><tspan class="fg">@</tspan><tspan class="a1 b">github</tspan></text>
+<text x="440" y="56" class="mt">───────────</text>
+<text x="440" y="76"><tspan class="a2 b">Name</tspan><tspan class="mt" xml:space="preserve">........: </tspan><tspan class="fg">Alex</tspan></text>
+<text x="440" y="96"><tspan class="a2 b">Age</tspan><tspan class="mt" xml:space="preserve">.........: </tspan><tspan class="fg">27 years</tspan></text>
+<text x="440" y="116"><tspan class="a2 b">Title</tspan><tspan class="mt" xml:space="preserve">.......: </tspan><tspan class="fg">CS Student @ h_da</tspan></text>
+<text x="440" y="136"><tspan class="a2 b">Location</tspan><tspan class="mt" xml:space="preserve">....: </tspan><tspan class="fg">Darmstadt, Germany</tspan></text>
+<text x="440" y="176"><tspan class="a2 b">OS</tspan><tspan class="mt" xml:space="preserve">..........: </tspan><tspan class="fg">Arch Linux</tspan></text>
+<text x="440" y="196"><tspan class="a2 b">WM</tspan><tspan class="mt" xml:space="preserve">..........: </tspan><tspan class="fg">Hyprland</tspan></text>
+<text x="440" y="216"><tspan class="a2 b">Shell</tspan><tspan class="mt" xml:space="preserve">.......: </tspan><tspan class="fg">zsh</tspan></text>
+<text x="440" y="236"><tspan class="a2 b">Terminal</tspan><tspan class="mt" xml:space="preserve">....: </tspan><tspan class="fg">Alacritty</tspan></text>
+<text x="440" y="256"><tspan class="a2 b">Editor</tspan><tspan class="mt" xml:space="preserve">......: </tspan><tspan class="fg">Neovim</tspan></text>
+<text x="440" y="296"><tspan class="a2 b">Languages</tspan><tspan class="mt" xml:space="preserve">...: </tspan><tspan class="fg">Go, TypeScript, Python, Java, C</tspan></text>
+<text x="440" y="316"><tspan class="a2 b">Frameworks</tspan><tspan class="mt" xml:space="preserve">..: </tspan><tspan class="fg">Angular, Laravel</tspan></text>
+<text x="440" y="336"><tspan class="a2 b">Databases</tspan><tspan class="mt" xml:space="preserve">...: </tspan><tspan class="fg">PostgreSQL, Redis</tspan></text>
+<text x="440" y="356"><tspan class="a2 b">Tools</tspan><tspan class="mt" xml:space="preserve">.......: </tspan><tspan class="fg">Docker, Kubernetes, Ansible,</tspan></text>
+<text x="440" y="376" xml:space="preserve" class="fg">              Terraform, Git</text>
+<text x="440" y="416"><tspan class="a2 b">Interests</tspan><tspan class="mt" xml:space="preserve">...: </tspan><tspan class="fg">Infrastructure, Networking,</tspan></text>
+<text x="440" y="436" xml:space="preserve" class="fg">              IT Automation</text>
+<text x="440" y="456"><tspan class="a2 b">GitHub</tspan><tspan class="mt" xml:space="preserve">......: </tspan><tspan class="fg">blackphantom39</tspan></text>
+<text x="440" y="476"><tspan class="a2 b">GPG</tspan><tspan class="mt" xml:space="preserve">.........: </tspan><tspan class="fg">4029C20815EFA296</tspan></text>
+</svg>
