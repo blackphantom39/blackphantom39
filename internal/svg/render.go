@@ -30,6 +30,9 @@ const (
 	// chosen to keep "<key>....: <value>" inside the right margin at the
 	// configured monospace font. Long values are wrapped on ", " boundaries.
 	valueCols = 35
+	// dividerCols is the total rune width of a section divider line spanning
+	// the info column at the configured monospace font.
+	dividerCols = 49
 )
 
 // Card bundles everything needed to render one profile SVG.
@@ -46,32 +49,34 @@ func (c *Card) RenderDark() []byte { return c.render(c.Theme.Dark) }
 // RenderLight returns the SVG bytes for the light variant.
 func (c *Card) RenderLight() []byte { return c.render(c.Theme.Light) }
 
+// row is either a section divider (section != "") or a key/value row.
 type row struct {
-	key   string
-	value string
-	blank bool
+	section string
+	key     string
+	value   string
 }
 
 func (c *Card) rows() []row {
 	p := c.Profile
 	return []row{
+		{section: "About"},
 		{key: "Name", value: p.Name},
 		{key: "Age", value: fmt.Sprintf("%d years", c.Age)},
 		{key: "Title", value: p.Title},
 		{key: "Location", value: p.Location},
-		{blank: true},
+		{key: "Interests", value: strings.Join(p.Interests, ", ")},
+		{section: "System"},
 		{key: "OS", value: p.OS},
 		{key: "WM", value: p.WM},
 		{key: "Shell", value: p.Shell},
 		{key: "Terminal", value: p.Terminal},
 		{key: "Editor", value: p.Editor},
-		{blank: true},
+		{section: "Stack"},
 		{key: "Languages", value: strings.Join(p.Languages, ", ")},
 		{key: "Frameworks", value: strings.Join(p.Frameworks, ", ")},
 		{key: "Databases", value: strings.Join(p.Databases, ", ")},
 		{key: "Tools", value: strings.Join(p.Tools, ", ")},
-		{blank: true},
-		{key: "Interests", value: strings.Join(p.Interests, ", ")},
+		{section: "Connect"},
 		{key: "GitHub", value: p.GitHub},
 		{key: "GPG", value: p.GPGKey},
 	}
@@ -85,7 +90,7 @@ func (c *Card) render(p theme.Palette) []byte {
 	wrapped := make([][]string, len(rows))
 	totalLines := 2 // header + separator
 	for i, r := range rows {
-		if r.blank {
+		if r.section != "" {
 			totalLines++
 			continue
 		}
@@ -149,11 +154,21 @@ text { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Conso
 		infoX, y, strings.Repeat("─", sepLen))
 
 	// Rows. Long values get split on ", " into continuation lines that align
-	// with where the value column starts on the first line.
+	// with where the value column starts on the first line. Section rows
+	// render as a full-width divider with the section label inlined.
 	indent := strings.Repeat(" ", keyWidth+2) // key column + ":" + space
 	for i, r := range rows {
 		y += lineH
-		if r.blank {
+		if r.section != "" {
+			lead := "── "
+			afterLabel := " "
+			fillN := dividerCols - utf8.RuneCountInString(lead) - utf8.RuneCountInString(r.section) - utf8.RuneCountInString(afterLabel)
+			if fillN < 1 {
+				fillN = 1
+			}
+			fmt.Fprintf(&b,
+				`<text x="%d" y="%d" xml:space="preserve"><tspan class="mt">%s</tspan><tspan class="a1 b">%s</tspan><tspan class="mt">%s%s</tspan></text>`+"\n",
+				infoX, y, lead, xmlEscape(r.section), afterLabel, strings.Repeat("─", fillN))
 			continue
 		}
 		dots := keyWidth - utf8.RuneCountInString(r.key)
