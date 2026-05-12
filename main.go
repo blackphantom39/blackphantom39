@@ -21,20 +21,30 @@ func main() {
 	var (
 		themeFile    = flag.String("theme", "theme.txt", "path to active theme file")
 		profileFile  = flag.String("profile", "profile.json", "path to profile JSON")
-		asciiFile    = flag.String("ascii", "ascii.txt", "path to ASCII art file")
+		asciiFile    = flag.String("ascii", "ascii.txt", "path to default ASCII art file")
 		templateFile = flag.String("template", "templates/README.md.tmpl", "path to README template")
 		outDark      = flag.String("dark", "dark.svg", "output path for the dark SVG")
 		outLight     = flag.String("light", "light.svg", "output path for the light SVG")
 		outReadme    = flag.String("readme", "README.md", "output path for the README")
+		dateOverride = flag.String("date", "", "render as if today were YYYY-MM-DD (preview easter eggs)")
 	)
 	flag.Parse()
 
-	if err := run(*themeFile, *profileFile, *asciiFile, *templateFile, *outDark, *outLight, *outReadme); err != nil {
+	now := time.Now()
+	if *dateOverride != "" {
+		t, err := time.Parse("2006-01-02", *dateOverride)
+		if err != nil {
+			log.Fatalf("parsing -date: %v", err)
+		}
+		now = t
+	}
+
+	if err := run(now, *themeFile, *profileFile, *asciiFile, *templateFile, *outDark, *outLight, *outReadme); err != nil {
 		log.Fatal(err)
 	}
 }
 
-func run(themeFile, profileFile, asciiFile, templateFile, outDark, outLight, outReadme string) error {
+func run(now time.Time, themeFile, profileFile, asciiFile, templateFile, outDark, outLight, outReadme string) error {
 	themeID, err := readActiveTheme(themeFile)
 	if err != nil {
 		return err
@@ -47,12 +57,26 @@ func run(themeFile, profileFile, asciiFile, templateFile, outDark, outLight, out
 	if err != nil {
 		return err
 	}
+
+	// Easter eggs swap the ASCII (and optionally the user@host header) on
+	// specific calendar days. The first matching entry wins.
+	if egg := pr.FindEasterEgg(now); egg != nil {
+		asciiFile = egg.ASCII
+		if egg.User != "" {
+			pr.User = egg.User
+		}
+		if egg.Host != "" {
+			pr.Host = egg.Host
+		}
+		fmt.Printf("easter egg active: %s\n", asciiFile)
+	}
+
 	asciiLines, err := readASCII(asciiFile)
 	if err != nil {
 		return err
 	}
 
-	age := pr.Age(time.Now())
+	age := pr.Age(now)
 	card := &svg.Card{
 		Profile: pr,
 		Theme:   th,

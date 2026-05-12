@@ -17,5 +17,8 @@
   "interests": ["Infrastructure", "Networking", "IT Automation"],
   "gpgKey": "4029C20815EFA296",
   "gpgUrl": "https://github.com/blackphantom39.gpg",
-  "github": "blackphantom39"
+  "github": "blackphantom39",
+  "easterEggs": [
+    {"month": 4, "day": 20, "ascii": "ascii-towelie.txt", "user": "towelie"}
+  ]
 }
