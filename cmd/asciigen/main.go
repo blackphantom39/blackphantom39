@@ -19,36 +19,54 @@ import (
 	"strings"
 )
 
-// ramp is the density ramp (sparse → dense) used to paint the silhouette.
-const ramp = " ░▒▓█"
+// defaultRamp is the sparse → dense ramp used by silhouette/sketch/lit when
+// the caller does not override it via -ramp.
+const defaultRamp = " ░▒▓█"
 
 func main() {
 	var (
-		in     = flag.String("in", "", "input image path (PNG or JPEG)")
-		out    = flag.String("out", "ascii.txt", "output ASCII path")
-		cols   = flag.Int("cols", 40, "output width in characters")
-		rows   = flag.Int("rows", 0, "output height in characters (0 = auto from aspect)")
-		mode   = flag.String("mode", "sketch", "density mode: silhouette | sketch | lit | quadrant")
-		alphaT = flag.Int("alpha-threshold", 32, "alpha below this value is treated as transparent (0–255)")
-		lumT   = flag.Float64("lum-threshold", 0.5, "quadrant mode: luminance threshold within opaque area (0–1)")
+		in          = flag.String("in", "", "input image path (PNG or JPEG; convert WebP via sips first)")
+		out         = flag.String("out", "ascii.txt", "output ASCII path")
+		cols        = flag.Int("cols", 40, "output width in characters")
+		rows        = flag.Int("rows", 0, "output height in characters (0 = auto from aspect)")
+		mode        = flag.String("mode", "sketch", "density mode: silhouette | sketch | lit | quadrant | braille")
+		alphaT      = flag.Int("alpha-threshold", 32, "alpha below this value is treated as transparent (0–255)")
+		lumT        = flag.Float64("lum-threshold", 0.5, "quadrant/braille: luminance threshold within opaque area (0–1)")
+		ramp        = flag.String("ramp", defaultRamp, "density ramp (sparse → dense) for silhouette/sketch/lit")
+		rampReverse = flag.Bool("ramp-reverse", false, "treat -ramp as dense → sparse and reverse it")
 	)
 	flag.Parse()
 
 	if *in == "" {
 		log.Fatal("missing -in")
 	}
-	if *mode == "quadrant" {
+	rampRunes := []rune(*ramp)
+	if *rampReverse {
+		for i, j := 0, len(rampRunes)-1; i < j; i, j = i+1, j-1 {
+			rampRunes[i], rampRunes[j] = rampRunes[j], rampRunes[i]
+		}
+	}
+	if len(rampRunes) < 2 {
+		log.Fatalf("-ramp must have at least 2 runes (got %q)", *ramp)
+	}
+
+	switch *mode {
+	case "quadrant":
 		if err := runQuadrant(*in, *out, *cols, *rows, uint32(*alphaT), *lumT); err != nil {
 			log.Fatal(err)
 		}
-		return
-	}
-	if err := run(*in, *out, *cols, *rows, *mode, uint32(*alphaT)); err != nil {
-		log.Fatal(err)
+	case "braille":
+		if err := runBraille(*in, *out, *cols, *rows, uint32(*alphaT), *lumT); err != nil {
+			log.Fatal(err)
+		}
+	default:
+		if err := run(*in, *out, *cols, *rows, *mode, uint32(*alphaT), rampRunes); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
 
-func run(inPath, outPath string, cols, rows int, mode string, alphaT uint32) error {
+func run(inPath, outPath string, cols, rows int, mode string, alphaT uint32, ramp []rune) error {
 	f, err := os.Open(inPath)
 	if err != nil {
 		return err
@@ -72,8 +90,7 @@ func run(inPath, outPath string, cols, rows int, mode string, alphaT uint32) err
 		}
 	}
 
-	rampRunes := []rune(ramp)
-	maxIdx := len(rampRunes) - 1
+	maxIdx := len(ramp) - 1
 
 	density := densityFunc(mode)
 	if density == nil {
@@ -120,7 +137,7 @@ func run(inPath, outPath string, cols, rows int, mode string, alphaT uint32) err
 				d = 1
 			}
 			idx := int(d*float64(maxIdx) + 0.5)
-			b.WriteRune(rampRunes[idx])
+			b.WriteRune(ramp[idx])
 		}
 		b.WriteByte('\n')
 	}
@@ -220,6 +237,102 @@ func runQuadrant(inPath, outPath string, cols, rows int, alphaT uint32, lumT flo
 				idx |= 8
 			}
 			b.WriteRune(quadrantChars[idx])
+		}
+		b.WriteByte('\n')
+	}
+
+	return os.WriteFile(outPath, []byte(b.String()), 0o644)
+}
+
+// brailleBit maps a sub-dot at (col, row) inside the 2×4 grid to its Unicode
+// Braille bit position relative to U+2800. Order follows the Unicode standard:
+//
+//	(0,0)=dot1 bit0   (1,0)=dot4 bit3
+//	(0,1)=dot2 bit1   (1,1)=dot5 bit4
+//	(0,2)=dot3 bit2   (1,2)=dot6 bit5
+//	(0,3)=dot7 bit6   (1,3)=dot8 bit7
+var brailleBit = [4][2]int{
+	{0, 3},
+	{1, 4},
+	{2, 5},
+	{6, 7},
+}
+
+// runBraille renders the image using Braille patterns (U+2800–U+28FF). Each
+// character cell encodes 2×4 binary sub-dots, giving 8× spatial resolution at
+// the same column count and the squarest sub-pixel aspect of any block mode.
+// A sub-dot is "on" when its sampled region is sufficiently opaque AND its
+// average luminance is below lumT — so dark features (eyes, outlines, hair)
+// drive the dot mask.
+func runBraille(inPath, outPath string, cols, rows int, alphaT uint32, lumT float64) error {
+	f, err := os.Open(inPath)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	img, _, err := image.Decode(f)
+	if err != nil {
+		return fmt.Errorf("decoding %s: %w", inPath, err)
+	}
+	bb := img.Bounds()
+	srcW, srcH := bb.Dx(), bb.Dy()
+
+	// Braille sub-dots are roughly square inside a monospace cell
+	// (~4×4 px each), so source aspect needs no halving here.
+	if rows == 0 {
+		rows = cols * srcH / srcW
+		if rows < 1 {
+			rows = 1
+		}
+	}
+
+	subW, subH := cols*2, rows*4
+
+	mask := make([]bool, subW*subH)
+	for sy := 0; sy < subH; sy++ {
+		y0 := bb.Min.Y + (sy*srcH)/subH
+		y1 := bb.Min.Y + ((sy+1)*srcH)/subH
+		for sx := 0; sx < subW; sx++ {
+			x0 := bb.Min.X + (sx*srcW)/subW
+			x1 := bb.Min.X + ((sx+1)*srcW)/subW
+
+			var sumLum, opaque, total uint64
+			for y := y0; y < y1; y++ {
+				for x := x0; x < x1; x++ {
+					r, g, bl, a := img.At(x, y).RGBA()
+					a8 := a >> 8
+					total++
+					if a8 < alphaT {
+						continue
+					}
+					opaque++
+					sumLum += (uint64(r>>8)*299 + uint64(g>>8)*587 + uint64(bl>>8)*114) / 1000
+				}
+			}
+			if total == 0 || opaque == 0 {
+				continue
+			}
+			coverage := float64(opaque) / float64(total)
+			avgLum := float64(sumLum) / float64(opaque) / 255.0
+			if coverage >= 0.5 && avgLum < lumT {
+				mask[sy*subW+sx] = true
+			}
+		}
+	}
+
+	var b strings.Builder
+	for ry := 0; ry < rows; ry++ {
+		for cx := 0; cx < cols; cx++ {
+			var bits int
+			for dy := 0; dy < 4; dy++ {
+				for dx := 0; dx < 2; dx++ {
+					if mask[(ry*4+dy)*subW+(cx*2+dx)] {
+						bits |= 1 << brailleBit[dy][dx]
+					}
+				}
+			}
+			b.WriteRune(rune(0x2800 + bits))
 		}
 		b.WriteByte('\n')
 	}
