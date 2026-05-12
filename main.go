@@ -75,13 +75,18 @@ func run(now time.Time, themeFile, profileFile, asciiFile, templateFile, outDark
 	if err != nil {
 		return err
 	}
+	asciiColors, err := readASCIIColors(asciiFile + ".colors")
+	if err != nil {
+		return err
+	}
 
 	age := pr.Age(now)
 	card := &svg.Card{
-		Profile: pr,
-		Theme:   th,
-		ASCII:   asciiLines,
-		Age:     age,
+		Profile:     pr,
+		Theme:       th,
+		ASCII:       asciiLines,
+		ASCIIColors: asciiColors,
+		Age:         age,
 	}
 
 	if err := os.WriteFile(outDark, card.RenderDark(), 0o644); err != nil {
@@ -111,6 +116,30 @@ func readActiveTheme(path string) (string, error) {
 		return "", fmt.Errorf("%s is empty: expected a theme id", path)
 	}
 	return id, nil
+}
+
+// readASCIIColors loads an optional per-character color sidecar. Each line
+// must contain whitespace-separated color tokens (hex like "#aabbcc" or "-"
+// to inherit the theme accent), one per character in the corresponding ASCII
+// line. Returns (nil, nil) if the sidecar is absent.
+func readASCIIColors(path string) ([][]string, error) {
+	data, err := os.ReadFile(path)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return nil, nil
+		}
+		return nil, fmt.Errorf("reading %s: %w", path, err)
+	}
+	raw := strings.TrimRight(string(data), "\n")
+	if raw == "" {
+		return nil, nil
+	}
+	lines := strings.Split(raw, "\n")
+	out := make([][]string, len(lines))
+	for i, l := range lines {
+		out[i] = strings.Fields(l)
+	}
+	return out, nil
 }
 
 func readASCII(path string) ([]string, error) {

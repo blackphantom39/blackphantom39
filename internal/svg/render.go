@@ -40,7 +40,12 @@ type Card struct {
 	Profile *profile.Profile
 	Theme   *theme.Theme
 	ASCII   []string
-	Age     int
+	// ASCIIColors, when non-nil, is a parallel grid of per-character hex
+	// colors (e.g. "#aabbcc") sized identically to ASCII (rune-wise per
+	// line). A "-" token means "use the theme ASCII accent". When nil,
+	// the entire ASCII column renders in the theme accent.
+	ASCIIColors [][]string
+	Age         int
 }
 
 // RenderDark returns the SVG bytes for the dark variant.
@@ -131,12 +136,21 @@ text { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Conso
 
 	// ASCII column. Rendered at a smaller font size than the info column so
 	// a denser ASCII grid (e.g. 60 cols × 30 rows) still fits on the left.
+	// When ASCIIColors is set, per-character colors are emitted as runs of
+	// <tspan fill="..."> within each line; otherwise the whole group uses
+	// the theme ASCII accent via the .as class.
 	if len(c.ASCII) > 0 {
 		fmt.Fprintf(&b, `<g class="as" font-size="%d">`+"\n", asciiFontSize)
 		for i, line := range c.ASCII {
 			y := asciiY0 + i*asciiLineH
-			fmt.Fprintf(&b, `  <text x="%d" y="%d" xml:space="preserve">%s</text>`+"\n",
-				asciiX, y, xmlEscape(line))
+			var colors []string
+			if i < len(c.ASCIIColors) {
+				colors = c.ASCIIColors[i]
+			}
+			fmt.Fprintf(&b, `  <text x="%d" y="%d" xml:space="preserve">`,
+				asciiX, y)
+			writeASCIILine(&b, line, colors)
+			fmt.Fprintln(&b, `</text>`)
 		}
 		fmt.Fprintln(&b, `</g>`)
 	}
@@ -193,6 +207,49 @@ text { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Conso
 
 	fmt.Fprintln(&b, `</svg>`)
 	return []byte(b.String())
+}
+
+// writeASCIILine emits the rune contents of an ASCII line with per-character
+// colors when colors is provided. Consecutive runes sharing the same color
+// are grouped into a single <tspan> to keep SVG size manageable. A color
+// token of "" or "-" means "inherit the parent <g class=as> fill".
+func writeASCIILine(b *strings.Builder, line string, colors []string) {
+	runes := []rune(line)
+	if len(colors) == 0 {
+		b.WriteString(xmlEscape(line))
+		return
+	}
+	// Build runs of same-color consecutive chars.
+	type run struct {
+		color string
+		runes []rune
+	}
+	normalize := func(c string) string {
+		if c == "" || c == "-" {
+			return ""
+		}
+		return c
+	}
+	var runs []run
+	for i, r := range runes {
+		col := ""
+		if i < len(colors) {
+			col = normalize(colors[i])
+		}
+		if len(runs) > 0 && runs[len(runs)-1].color == col {
+			runs[len(runs)-1].runes = append(runs[len(runs)-1].runes, r)
+			continue
+		}
+		runs = append(runs, run{color: col, runes: []rune{r}})
+	}
+	for _, run := range runs {
+		text := xmlEscape(string(run.runes))
+		if run.color == "" {
+			b.WriteString(text)
+			continue
+		}
+		fmt.Fprintf(b, `<tspan fill="%s">%s</tspan>`, run.color, text)
+	}
 }
 
 // wrapValue splits a value string on ", " boundaries so each line fits within
