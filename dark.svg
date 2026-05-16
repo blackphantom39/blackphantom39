@@ -49,19 +49,19 @@ text { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Menlo, Conso
 <text x="440" y="76" xml:space="preserve"><tspan class="mt">── </tspan><tspan class="a1 b">About</tspan><tspan class="mt"> ────────────────────────────────────────</tspan></text>
 <text x="440" y="96"><tspan class="a2 b">Name</tspan><tspan class="mt" xml:space="preserve">........: </tspan><tspan class="fg">Alex</tspan></text>
 <text x="440" y="116"><tspan class="a2 b">Age</tspan><tspan class="mt" xml:space="preserve">.........: </tspan><tspan class="fg">27 years</tspan></text>
-<text x="440" y="136"><tspan class="a2 b">Title</tspan><tspan class="mt" xml:space="preserve">.......: </tspan><tspan class="fg">CS Student @ h_da</tspan></text>
+<text x="440" y="136"><tspan class="a2 b">Title</tspan><tspan class="mt" xml:space="preserve">.......: </tspan><tspan class="fg">Administrative / Technical Staff @ h_da</tspan></text>
 <text x="440" y="156"><tspan class="a2 b">Location</tspan><tspan class="mt" xml:space="preserve">....: </tspan><tspan class="fg">Darmstadt, Germany</tspan></text>
 <text x="440" y="176"><tspan class="a2 b">Interests</tspan><tspan class="mt" xml:space="preserve">...: </tspan><tspan class="fg">Infrastructure, Networking,</tspan></text>
 <text x="440" y="196" xml:space="preserve" class="fg">              IT Automation</text>
 <text x="440" y="216" xml:space="preserve"><tspan class="mt">── </tspan><tspan class="a1 b">System</tspan><tspan class="mt"> ───────────────────────────────────────</tspan></text>
-<text x="440" y="236"><tspan class="a2 b">OS</tspan><tspan class="mt" xml:space="preserve">..........: </tspan><tspan class="fg">Arch Linux</tspan></text>
-<text x="440" y="256"><tspan class="a2 b">WM</tspan><tspan class="mt" xml:space="preserve">..........: </tspan><tspan class="fg">Hyprland</tspan></text>
+<text x="440" y="236"><tspan class="a2 b">OS</tspan><tspan class="mt" xml:space="preserve">..........: </tspan><tspan class="fg">MacOS</tspan></text>
+<text x="440" y="256"><tspan class="a2 b">WM</tspan><tspan class="mt" xml:space="preserve">..........: </tspan><tspan class="fg">None</tspan></text>
 <text x="440" y="276"><tspan class="a2 b">Shell</tspan><tspan class="mt" xml:space="preserve">.......: </tspan><tspan class="fg">zsh</tspan></text>
-<text x="440" y="296"><tspan class="a2 b">Terminal</tspan><tspan class="mt" xml:space="preserve">....: </tspan><tspan class="fg">Alacritty</tspan></text>
+<text x="440" y="296"><tspan class="a2 b">Terminal</tspan><tspan class="mt" xml:space="preserve">....: </tspan><tspan class="fg">iTerm2</tspan></text>
 <text x="440" y="316"><tspan class="a2 b">Editor</tspan><tspan class="mt" xml:space="preserve">......: </tspan><tspan class="fg">Neovim</tspan></text>
 <text x="440" y="336" xml:space="preserve"><tspan class="mt">── </tspan><tspan class="a1 b">Stack</tspan><tspan class="mt"> ────────────────────────────────────────</tspan></text>
 <text x="440" y="356"><tspan class="a2 b">Languages</tspan><tspan class="mt" xml:space="preserve">...: </tspan><tspan class="fg">Go, TypeScript, Python, Java, C</tspan></text>
-<text x="440" y="376"><tspan class="a2 b">Frameworks</tspan><tspan class="mt" xml:space="preserve">..: </tspan><tspan class="fg">Angular, Laravel</tspan></text>
+<text x="440" y="376"><tspan class="a2 b">Frameworks</tspan><tspan class="mt" xml:space="preserve">..: </tspan><tspan class="fg">Vue</tspan></text>
 <text x="440" y="396"><tspan class="a2 b">Databases</tspan><tspan class="mt" xml:space="preserve">...: </tspan><tspan class="fg">PostgreSQL, Redis</tspan></text>
 <text x="440" y="416"><tspan class="a2 b">Tools</tspan><tspan class="mt" xml:space="preserve">.......: </tspan><tspan class="fg">Docker, Kubernetes, Ansible,</tspan></text>
 <text x="440" y="436" xml:space="preserve" class="fg">              Terraform, Git</text>
