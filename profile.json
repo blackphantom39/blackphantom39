@@ -8,7 +8,7 @@
   "os": "MacOS",
   "shell": "zsh",
   "editor": "Neovim",
-  "wm": "Hyprland",
+  "wm": "None",
   "terminal": "iTerm2",
   "languages": [
     "Go",
