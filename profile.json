@@ -2,23 +2,49 @@
   "user": "alex",
   "host": "github",
   "name": "Alex",
-  "birthdate": "1999-01-01",
+  "birthdate": "1998-08-24",
   "location": "Darmstadt, Germany",
-  "title": "CS Student @ h_da",
-  "os": "Arch Linux",
+  "title": "Administrative / Technical Staff @ h_da",
+  "os": "MacOS",
   "shell": "zsh",
   "editor": "Neovim",
   "wm": "Hyprland",
-  "terminal": "Alacritty",
-  "languages": ["Go", "TypeScript", "Python", "Java", "C"],
-  "frameworks": ["Angular", "Laravel"],
-  "databases": ["PostgreSQL", "Redis"],
-  "tools": ["Docker", "Kubernetes", "Ansible", "Terraform", "Git"],
-  "interests": ["Infrastructure", "Networking", "IT Automation"],
+  "terminal": "iTerm2",
+  "languages": [
+    "Go",
+    "TypeScript",
+    "Python",
+    "Java",
+    "C"
+  ],
+  "frameworks": [
+    "Vue"
+  ],
+  "databases": [
+    "PostgreSQL",
+    "Redis"
+  ],
+  "tools": [
+    "Docker",
+    "Kubernetes",
+    "Ansible",
+    "Terraform",
+    "Git"
+  ],
+  "interests": [
+    "Infrastructure",
+    "Networking",
+    "IT Automation"
+  ],
   "gpgKey": "4029C20815EFA296",
   "gpgUrl": "https://github.com/blackphantom39.gpg",
   "github": "blackphantom39",
   "easterEggs": [
-    {"month": 4, "day": 20, "ascii": "ascii-towelie.txt", "user": "towelie"}
+    {
+      "month": 4,
+      "day": 20,
+      "ascii": "ascii-towelie.txt",
+      "user": "towelie"
+    }
   ]
 }
